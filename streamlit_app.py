@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import tempfile
 from typing import List, Dict, Tuple
-import PyPDF2
+import pdfplumber
 import docx
 from sentence_transformers import SentenceTransformer
 import chromadb
@@ -94,13 +94,14 @@ class DocumentQASystem:
         self.embedding_model = self._init_embedding_model()
     
     def extract_text_from_pdf(self, file_bytes: bytes) -> str:
-        """Extract text from PDF file bytes"""
+        """Extract text from PDF file bytes using pdfplumber"""
         text = ""
         try:
-            pdf_file = io.BytesIO(file_bytes)
-            pdf_reader = PyPDF2.PdfReader(pdf_file)
-            for page in pdf_reader.pages:
-                text += page.extract_text() + "\n"
+            with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:  # Check if text was extracted
+                        text += page_text + "\n"
         except Exception as e:
             st.error(f"Error extracting PDF: {str(e)}")
         return text
