@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import tempfile
 from typing import List, Dict, Tuple
-import fitz
+import pdfplumber  # Added this import
 import docx
 from sentence_transformers import SentenceTransformer
 import chromadb
